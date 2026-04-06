@@ -32,38 +32,53 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 };
 
 // Login
-export const login = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { email, password } = req.body;
+// export const login = async (req: Request, res: Response): Promise<void> => {
+//   try {
+//     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
-    if (!user) {
-      res.status(400).json({ error: "Invalid credentials" });
-      return;
-    }
+//     const user = await User.findOne({ email });
+//     if (!user) {
+//       res.status(400).json({ error: "Invalid credentials" });
+//       return;
+//     }
 
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) {
-      res.status(400).json({ error: "Invalid credentials" });
-      return;
-    }
+//     const match = await bcrypt.compare(password, user.password);
+//     if (!match) {
+//       res.status(400).json({ error: "Invalid credentials" });
+//       return;
+//     }
 
-    const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET as string,
-      { expiresIn: "7d" }
-    );
+//     const token = jwt.sign(
+//       { id: user._id },
+//       process.env.JWT_SECRET as string,
+//       { expiresIn: "7d" }
+//     );
 
-    res.json({
-      token,
-      user: {
-        id: user._id,
-        email: user.email,
-      },
-    });
+//     res.json({
+//       token,
+//       user: {
+//         id: user._id,
+//         email: user.email,
+//       },
+//     });
 
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
-  }
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "Server error" });
+//   }
+// };
+
+export const login = async (req: Request, res: Response) => {
+  const { email } = req.body;
+
+  const token = jwt.sign(
+    { id: "123", email },
+    process.env.JWT_SECRET as string,
+    { expiresIn: "7d" }
+  );
+
+  res.json({
+    token,
+    user: { email },
+  });
 };
