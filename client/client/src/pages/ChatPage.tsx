@@ -33,6 +33,7 @@ const Chat = () => {
     selectChat,
     sendMessage,
   } = useApp();
+
   const activeChats = currentProjectId ? projectChats : chats;
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -48,11 +49,13 @@ const Chat = () => {
   }, [currentChatId, chats]);
 
   const toggleTheme = () => setDark(!dark);
-useEffect(() => {
-  if (!currentChatId && activeChats.length === 0) {
-    createChat();
-  }
-}, [currentProjectId]); // ✅ only when project changes
+  useEffect(() => {
+    if (!currentChatId && activeChats.length === 0) {
+      createChat();
+    }
+  }, [currentProjectId]);
+  
+  
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -63,10 +66,10 @@ useEffect(() => {
   const handleSend = async () => {
     if (!input.trim() || loading) return;
     let chatId = currentChatId;
-   if (!chatId) {
-  createChat();
-  return; 
-}
+    if (!chatId) {
+      createChat();
+      return;
+    }
     const userMessage = { role: "user", content: input };
     const updated = [...messages, userMessage];
     setMessages(updated);
