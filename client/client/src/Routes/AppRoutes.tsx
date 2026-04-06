@@ -1,30 +1,30 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Chat from "../pages/ChatPage";
 import Login from "../pages/login";
 import Register from "../pages/Register";
-import Profile from "../pages/profile";
 import Settings from "../pages/setting";
 import Projects from "../pages/projects";
 
-const AppRoutes = () => {
+const PrivateRoute = ({ children }: any) => {
   const token = localStorage.getItem("token");
+  return token ? children : <Navigate to="/login" />;
+};
 
+const AppRoutes = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {!token ? (
-          <>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-          </>
-        ) : (
-          <>
-            <Route path="/" element={<Chat />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/projects" element={<Projects />} />
-          </>
-        )}
+        {/* Public */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        {/* Private */}
+        <Route path="/" element={<PrivateRoute><Chat /></PrivateRoute>} />
+        <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
+        <Route path="/projects" element={<PrivateRoute><Projects /></PrivateRoute>} />
+
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,31 +1,7 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Chat from "./pages/ChatPage";
-import Login from "./pages/login";
-import Register from "./pages/Register";
-import Settings from "./pages/setting";
-import Projects from "./pages/projects";
+import AppRoutes from "./Routes/AppRoutes";
 
-const AppRoutes = () => {
-  const token = localStorage.getItem("token");
+function App() {
+  return <AppRoutes />;
+}
 
-  return (
-    <BrowserRouter>
-      <Routes>
-        {!token ? (
-          <>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-          </>
-        ) : (
-          <>
-            <Route path="/" element={<Chat />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/projects" element={<Projects />} />
-          </>
-        )}
-      </Routes>
-    </BrowserRouter>
-  );
-};
-
-export default AppRoutes;
+export default App;
