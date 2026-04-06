@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import Message from "./message";
+import Message from "../components/message";
 import Sidebar from "../layout/sidebar";
 import ThemeToggle from "../layout/ThemeToggle";
 import { CornerDownLeft, Sparkles, Wand2, Terminal, PenTool, Box, Database } from "lucide-react";
@@ -12,11 +12,29 @@ const Chat = () => {
 
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const token = localStorage.getItem("token") || "";
-
+  const [chats, setChats] = useState<any[]>([]);
+  const [currentChatId, setCurrentChatId] = useState<string | null>(null);
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+  const createNewChat = () => {
+    const newChat = {
+      id: Date.now().toString(),
+      title: "New Chat",
+      messages: [],
+    };
 
+    setChats((prev) => [newChat, ...prev]);
+    setCurrentChatId(newChat.id);
+    setMessages([]);
+  }; 
+  const loadChat = (id: string) => {
+    const chat = chats.find((c) => c.id === id);
+    if (!chat) return;
+
+    setCurrentChatId(id);
+    setMessages(chat.messages);
+  };
   const toggleTheme = () => setDark(!dark);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -27,12 +45,25 @@ const Chat = () => {
   };
 
   const handleSend = async () => {
+    if (!currentChatId) {
+  createNewChat();
+}
     if (!input.trim() || loading) return;
     const updated = [...messages, { role: "user", content: input }];
     setMessages(updated);
     setInput("");
     setLoading(true);
-
+   setChats((prev) =>
+  prev.map((chat) =>
+    chat.id === currentChatId
+      ? {
+          ...chat,
+          messages: updated,
+          title: updated[0]?.content.slice(0, 25) || "New Chat",
+        }
+      : chat
+  )
+);
     try {
       const res = await fetch("http://localhost:5000/api/chat", {
         method: "POST",
@@ -59,8 +90,12 @@ const Chat = () => {
 
   return (
     <div className={`${dark ? "bg-[#08090d] text-white" : "bg-gray-50 text-gray-900"} flex h-screen w-full font-sans transition-colors duration-300`}>
-      <Sidebar />
-
+   <Sidebar
+  chats={chats}
+  onNewChat={createNewChat}
+  onSelectChat={loadChat}
+  currentChatId={currentChatId}
+/>
       <main className="flex-1 flex flex-col relative overflow-hidden">
         {/* Header: Medium height, glass effect */}
         <header className="flex justify-between items-center px-4 md:px-8 py-4 backdrop-blur-xl bg-white/70 dark:bg-[#08090d]/80 z-20 border-b border-gray-200 dark:border-white/5 sticky top-0">
@@ -92,18 +127,18 @@ const Chat = () => {
                 <p className="text-gray-500 dark:text-gray-400 max-w-sm text-base md:text-lg mb-10">
                   Your premium AI collaborator for code and creative analysis.
                 </p>
-                
+
                 {/* Medium Card Suggestions: Responsive Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
                   {[
-                    {title: "Code Python FastAPI", icon: <Terminal size={18}/>},
-                    {title: "Draft UI Trends blog", icon: <PenTool size={18}/>},
-                    {title: "Explain Docker containers", icon: <Box size={18}/>},
-                    {title: "Optimize SQL query", icon: <Database size={18}/>}
+                    { title: "Code Python FastAPI", icon: <Terminal size={18} /> },
+                    { title: "Draft UI Trends blog", icon: <PenTool size={18} /> },
+                    { title: "Explain Docker containers", icon: <Box size={18} /> },
+                    { title: "Optimize SQL query", icon: <Database size={18} /> }
                   ].map((s) => (
-                    <button 
-                      key={s.title} 
-                      onClick={() => setInput(s.title)} 
+                    <button
+                      key={s.title}
+                      onClick={() => setInput(s.title)}
                       className="group flex items-center gap-3 p-4 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/5 rounded-xl hover:border-blue-500/50 hover:bg-blue-50/50 dark:hover:bg-white/10 transition-all text-left shadow-sm active:scale-95"
                     >
                       <span className="p-2 bg-gray-100 dark:bg-white/5 rounded-lg text-gray-500 group-hover:text-blue-500 transition-colors">
@@ -119,7 +154,7 @@ const Chat = () => {
                 {messages.map((msg, i) => <Message key={i} role={msg.role} content={msg.content} />)}
               </div>
             )}
-            
+
             {loading && (
               <div className="flex gap-2 items-center text-blue-500/70 text-[10px] font-black uppercase tracking-widest ml-14 mt-4 animate-pulse">
                 <span className="flex gap-1">
@@ -139,12 +174,12 @@ const Chat = () => {
           <div className="max-w-3xl mx-auto relative group">
             {/* Glow effect on focus */}
             <div className="absolute -inset-1 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-[22px] blur-lg opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
-            
+
             <div className="relative flex items-center bg-white dark:bg-[#12141c] border border-gray-200 dark:border-white/10 rounded-2xl px-2 py-1.5 shadow-2xl transition-all duration-300 focus-within:border-blue-500/50">
               <button className="p-2.5 text-gray-400 hover:text-blue-500 transition hidden sm:block">
                 <Wand2 size={18} />
               </button>
-              
+
               <input
                 className="flex-1 bg-transparent border-none outline-none px-3 py-2 text-sm md:text-base placeholder-gray-500"
                 placeholder="Ask Synapse AI anything..."
@@ -152,7 +187,7 @@ const Chat = () => {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
               />
-              
+
               <button
                 onClick={handleSend}
                 disabled={!input.trim() || loading}
@@ -162,7 +197,7 @@ const Chat = () => {
                 <CornerDownLeft size={14} />
               </button>
             </div>
-            
+
             <p className="text-[9px] md:text-[10px] text-center mt-3 text-gray-400 dark:text-gray-500 uppercase tracking-widest font-medium">
               Enterprise Security Active • 256-bit Encrypted
             </p>

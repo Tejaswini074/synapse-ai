@@ -1,9 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Chat from "./pages/ChatPage";
-import Login from "./pages/login";
-import Register from "./pages/Register";
-import Settings from "./pages/setting";
-import Projects from "./pages/projects";
+import Chat from "../pages/ChatPage";
+import Login from "../pages/login";
+import Register from "../pages/Register";
+import Profile from "../pages/profile";
+import Settings from "../pages/setting";
+import Projects from "../pages/projects";
 
 const AppRoutes = () => {
   const token = localStorage.getItem("token");
@@ -19,6 +20,7 @@ const AppRoutes = () => {
         ) : (
           <>
             <Route path="/" element={<Chat />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/projects" element={<Projects />} />
           </>
