@@ -39,7 +39,7 @@ export const chat = async (req: AuthRequest, res: Response): Promise<void> => {
     res.end();
 
   } catch (error) {
-    console.error("🔥 FULL CHAT ERROR:", error);
+    console.error(" FULL CHAT ERROR:", error);
     res.status(500).json({ error: "Chat error" });
   }
 };
