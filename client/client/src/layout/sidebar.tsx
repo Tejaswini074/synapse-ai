@@ -8,7 +8,7 @@ const Sidebar = ({ chats = [], onNewChat, onSelectChat, currentChatId }: any) =>
 
   const handleNavigate = (path: string) => {
     navigate(path);
-    setOpen(false); // close sidebar on mobile
+    setOpen(false); 
   };
 
   const handleLogout = () => {
