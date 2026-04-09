@@ -1,18 +1,13 @@
 import mongoose, { Document, Schema } from "mongoose";
 
-interface IMessage {
-  role: "user" | "assistant";
-  content: string;
-}
-
-export interface IChat extends Document {
+export interface INote extends Document {
   userId: mongoose.Types.ObjectId;
   projectId?: mongoose.Types.ObjectId | null;
   title: string;
-  messages: IMessage[];
+  content: string;
 }
 
-const chatSchema = new Schema<IChat>(
+const noteSchema = new Schema<INote>(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -26,16 +21,15 @@ const chatSchema = new Schema<IChat>(
     },
     title: {
       type: String,
-      default: "New Chat",
+      required: true,
+      trim: true,
     },
-    messages: [
-      {
-        role: String,
-        content: String,
-      },
-    ],
+    content: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );
 
-export default mongoose.model<IChat>("Chat", chatSchema);
+export default mongoose.model<INote>("Note", noteSchema);

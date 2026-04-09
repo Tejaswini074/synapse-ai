@@ -2,7 +2,11 @@ import mongoose, { Document, Schema } from "mongoose";
 
 export interface IUser extends Document {
   email: string;
-  password: string;
+  password?: string;
+  name?: string;
+  avatarUrl?: string;
+  provider: "local" | "google" | "github";
+  providerId?: string;
 }
 
 const userSchema = new Schema<IUser>(
@@ -14,7 +18,24 @@ const userSchema = new Schema<IUser>(
     },
     password: {
       type: String,
-      required: true,
+      required: false,
+    },
+    name: {
+      type: String,
+      required: false,
+    },
+    avatarUrl: {
+      type: String,
+      required: false,
+    },
+    provider: {
+      type: String,
+      enum: ["local", "google", "github"],
+      default: "local",
+    },
+    providerId: {
+      type: String,
+      required: false,
     },
   },
   { timestamps: true }

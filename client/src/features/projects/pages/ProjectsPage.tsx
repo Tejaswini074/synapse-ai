@@ -4,7 +4,6 @@ import {
   Folder,
   MoreVertical,
   Calendar,
-  Zap,
   LayoutGrid,
   List,
   X,
@@ -12,10 +11,17 @@ import {
   Trash2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useApp } from "../context/AppContext";
+import WorkspaceShell from "../../../shared/layout/WorkspaceShell";
+import { useApp } from "../../workspace/context/AppContext";
 
 const Projects = () => {
-  const { projects, createProject, currentProjectId, setCurrentProjectId,deleteProject } = useApp();
+  const {
+    projects,
+    createProject,
+    currentProjectId,
+    setCurrentProjectId,
+    deleteProject,
+  } = useApp();
 
   const [name, setName] = useState("");
   const [menuOpen, setMenuOpen] = useState<number | null>(null);
@@ -28,9 +34,6 @@ const Projects = () => {
     setName("");
   };
 
-  const currentProject = projects.find(
-    (p: any) => p.id === currentProjectId
-  );
   const openProject = (id: number) => {
     if (currentProjectId === id) {
       navigate("/");
@@ -41,34 +44,30 @@ const Projects = () => {
       navigate("/");
     }, 0);
   };
-
-const deleteProjectHandler = (id: number) => {
-  deleteProject(id);
-};
   return (
-    <div className="fixed inset-0 min-h-screen bg-[#05060a] text-white z-[60] overflow-y-auto custom-scrollbar selection:bg-blue-500/30">
-
-      {/* NAV */}
-      <nav className="sticky top-0 z-10 bg-[#05060a]/80 backdrop-blur-xl border-b border-white/[0.03] px-8 py-4">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
+    <WorkspaceShell
+      title="Projects"
+      subtitle="Organize chats, notes, and docs into focused workspaces."
+      actions={
+        <>
           <button
             onClick={() => navigate("/")}
-            className="flex items-center gap-2 text-gray-500 hover:text-white font-bold text-xs uppercase tracking-widest"
+            className="flex items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-sm text-gray-300 hover:bg-white/5"
           >
             <ChevronLeft size={16} />
-            Back
+            Back To Chat
           </button>
-
           <button
             onClick={() => navigate("/")}
-            className="p-2 text-red-400"
+            className="rounded-lg border border-white/10 p-2 text-red-400 hover:bg-red-500/10"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
-        </div>
-      </nav>
-
-      <div className="max-w-6xl mx-auto p-8 md:p-12 pb-24">
+        </>
+      }
+    >
+      <div className="min-w-0 flex-1 overflow-y-auto custom-scrollbar bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.06),_transparent_24%)]">
+        <div className="mx-auto max-w-6xl p-8 md:p-12 pb-24">
 
         {/* HEADER */}
         <header className="flex justify-between mb-12">
@@ -219,8 +218,9 @@ const deleteProjectHandler = (id: number) => {
             ))}
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </WorkspaceShell>
   );
 };
 

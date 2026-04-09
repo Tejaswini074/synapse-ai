@@ -4,17 +4,21 @@
 /* Custom Scrollbar for Sidebar */
 @layer utilities {
   .custom-scrollbar::-webkit-scrollbar {
-    width: 5px;
+    width: 7px;
+    height: 7px;
   }
   .custom-scrollbar::-webkit-scrollbar-track {
     background: transparent;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #2d2d2d;
+    background: rgba(148, 163, 184, 0.22);
     border-radius: 20px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #3d3d3d;
+    background: rgba(148, 163, 184, 0.35);
+    background-clip: padding-box;
   }
 }
 
@@ -28,4 +32,16 @@
   background-image: radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.1) 0, transparent 50%), 
                     radial-gradient(at 100% 100%, rgba(124, 58, 237, 0.1) 0, transparent 50%);
   animation: mesh 10s ease infinite;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
 }
