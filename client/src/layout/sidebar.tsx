@@ -1,14 +1,37 @@
 import { useState } from "react";
-import { Plus, MessageSquare, Settings, LogOut, PanelLeft, Sparkles, ShieldCheck, Search, Folder, User } from "lucide-react";
+import {
+  Plus,
+  MessageSquare,
+  Settings,
+  LogOut,
+  PanelLeft,
+  Sparkles,
+  Search,
+  Folder,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useApp } from "../context/AppContext";
 
-const Sidebar = ({ chats = [], onNewChat, onSelectChat, currentChatId }: any) => {
+const Sidebar = () => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
+  const {
+    projects,
+    globalChats,
+    projectChats,
+    currentProjectId,
+    setCurrentProjectId,
+    createChat,
+    selectChat,
+    currentChatId,
+  } = useApp();
+
+  const activeChats = currentProjectId ? projectChats : globalChats;
+
   const handleNavigate = (path: string) => {
     navigate(path);
-    setOpen(false); 
+    setOpen(false);
   };
 
   const handleLogout = () => {
@@ -35,93 +58,116 @@ const Sidebar = ({ chats = [], onNewChat, onSelectChat, currentChatId }: any) =>
         } md:translate-x-0 transition-all duration-500 z-[55] flex flex-col`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between mb-10 px-1">
-          <div className="flex items-center gap-2.5">
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-2">
             <div className="bg-blue-600/10 p-2 rounded-lg border border-blue-500/20">
               <Sparkles size={14} className="text-blue-400" />
             </div>
-            <span className="font-bold text-sm text-white/90">Synapse</span>
+            <span className="font-bold text-sm">Synapse</span>
           </div>
 
-          {/* New Chat */}
           <button
             onClick={() => {
-              onNewChat();
+              createChat();
               setOpen(false);
             }}
-            className="p-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-all active:scale-95 group"
+            className="p-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg"
           >
-            <Plus size={16} className="group-hover:rotate-90 transition-transform" />
+            <Plus size={16} />
           </button>
         </div>
 
-        {/* Navigation */}
-        <div className="space-y-1 mb-6">
-          <button
-            onClick={() => handleNavigate("/projects")}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-gray-400 hover:text-white hover:bg-white/[0.05]"
-          >
-            <Folder size={14} /> Projects
-          </button>
+        {/* NAV */}
+        <button
+          onClick={() => handleNavigate("/projects")}
+          className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-400 hover:bg-white/5 mb-4"
+        >
+          <Folder size={14} /> Projects
+        </button>
 
-        
-        </div>
-
-        {/* Search */}
-        <div className="relative mb-6">
+        {/* SEARCH */}
+        <div className="relative mb-5">
           <Search size={14} className="absolute left-3 top-2 text-gray-500" />
           <input
-            className="w-full pl-8 p-2 bg-white/[0.03] rounded-xl text-xs"
+            className="w-full pl-8 p-2 bg-white/[0.03] rounded-lg text-xs"
             placeholder="Search..."
           />
         </div>
 
-        {/* Chat History */}
-        <div className="flex-1 overflow-y-auto -mx-1 px-1">
-          <div className="text-[9px] text-gray-600 mb-3 px-2 uppercase">
-            Recent Chats
-          </div>
+        {/* GLOBAL CHAT SWITCH */}
+        <button
+          onClick={() => setCurrentProjectId(null)}
+          className={`w-full text-left px-3 py-2 rounded-lg text-sm mb-4 ${
+            !currentProjectId
+              ? "bg-blue-500/20 text-blue-400"
+              : "text-gray-400 hover:bg-white/5"
+          }`}
+        >
+          💬 General Chat
+        </button>
 
-          <div className="space-y-1">
-            {chats.length === 0 ? (
-              <div className="text-center text-gray-600 text-xs mt-4">
-                No chats yet
-              </div>
-            ) : (
-              chats.map((chat: any) => (
-                <button
-                  key={chat.id}
-                  onClick={() => {
-                    onSelectChat(chat.id);
-                    setOpen(false);
-                  }}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition
-                    ${
-                      currentChatId === chat.id
-                        ? "bg-blue-500/10 text-blue-400"
-                        : "text-gray-400 hover:bg-white/[0.05]"
-                    }`}
-                >
-                  <MessageSquare size={14} />
-                  <span className="truncate">{chat.title || "New Chat"}</span>
-                </button>
-              ))
-            )}
-          </div>
+        {/* PROJECTS */}
+        <div className="mb-5">
+          <p className="text-xs text-gray-500 mb-2">Projects</p>
+
+          {projects.map((p: any) => (
+            <button
+              key={p.id}
+              onClick={() => setCurrentProjectId(p.id)}
+              className={`w-full text-left px-3 py-2 rounded-lg text-sm ${
+                currentProjectId === p.id
+                  ? "bg-blue-500/20 text-blue-400"
+                  : "text-gray-400 hover:bg-white/5"
+              }`}
+            >
+              📁 {p.name}
+            </button>
+          ))}
         </div>
 
-        {/* Footer */}
+        {/* CHATS */}
+        <div className="flex-1 overflow-y-auto">
+          <p className="text-xs text-gray-500 mb-2">
+            {currentProjectId ? "Project Chats" : "Chats"}
+          </p>
+
+          {activeChats.length === 0 ? (
+            <p className="text-xs text-gray-600">No chats</p>
+          ) : (
+            activeChats.map((chat: any) => (
+              <button
+                key={chat.id}
+                onClick={() => {
+                  selectChat(chat.id);
+                  setOpen(false);
+                }}
+                className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm ${
+                  currentChatId === chat.id
+                    ? "bg-blue-500/20 text-blue-400"
+                    : "text-gray-400 hover:bg-white/5"
+                }`}
+              >
+                <MessageSquare size={14} />
+                <span className="truncate">
+                  {chat.title || "New Chat"}
+                </span>
+              </button>
+            ))
+          )}
+        </div>
+
+        {/* FOOTER */}
         <div className="mt-auto pt-4 space-y-2">
           <button
             onClick={() => handleNavigate("/settings")}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-gray-400 hover:bg-white/[0.05]"
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-400 hover:bg-white/5"
           >
             <Settings size={14} /> Settings
           </button>
 
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-red-400 hover:bg-red-500/10"
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-red-400 hover:bg-red-500/10"
           >
             <LogOut size={14} /> Logout
           </button>

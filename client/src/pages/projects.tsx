@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 
 const Projects = () => {
-  const { projects, createProject, currentProjectId, setCurrentProjectId } = useApp();
+  const { projects, createProject, currentProjectId, setCurrentProjectId,deleteProject } = useApp();
 
   const [name, setName] = useState("");
   const [menuOpen, setMenuOpen] = useState<number | null>(null);
@@ -41,13 +41,10 @@ const Projects = () => {
       navigate("/");
     }, 0);
   };
-  const deleteProject = (id: number) => {
-    const updated = projects.filter((p: any) => p.id !== id);
-    console.log("Deleted:", id);
 
-    setMenuOpen(null);
-  };
-
+const deleteProjectHandler = (id: number) => {
+  deleteProject(id);
+};
   return (
     <div className="fixed inset-0 min-h-screen bg-[#05060a] text-white z-[60] overflow-y-auto custom-scrollbar selection:bg-blue-500/30">
 
