@@ -37,7 +37,7 @@ export const useDocsPage = () => {
 
   const handleDuplicateDoc = () => {
     if (!currentDoc) return;
-    const newId = createDoc(
+    createDoc(
       `${currentDoc.title} (copy)`,
       currentDoc.content,
       currentProjectId

@@ -143,13 +143,13 @@ const Docs = () => {
 
               <div className="mb-5 flex flex-wrap gap-2">
                 <button
-                  onClick={() => handleExportDoc(currentDoc)}
+                  onClick={handleExportDoc}
                   className="rounded-2xl border border-white/[0.06] bg-amber-500/10 px-4 py-2 text-sm font-semibold text-amber-100 transition hover:bg-amber-500/15"
                 >
                   Export Doc
                 </button>
                 <button
-                  onClick={() => handleDuplicateDoc(currentDoc.id)}
+                  onClick={handleDuplicateDoc}
                   className="rounded-2xl border border-white/[0.06] bg-white/[0.05] px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/[0.08]"
                 >
                   Duplicate Doc
