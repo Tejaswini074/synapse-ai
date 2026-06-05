@@ -21,6 +21,29 @@ export const useDocsPage = () => {
     createDoc("Untitled Doc", "", currentProjectId);
   };
 
+  const handleExportDoc = () => {
+    if (!currentDoc) return;
+    const json = JSON.stringify(currentDoc, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${currentDoc.title || "doc"}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDuplicateDoc = () => {
+    if (!currentDoc) return;
+    const newId = createDoc(
+      `${currentDoc.title} (copy)`,
+      currentDoc.content,
+      currentProjectId
+    );
+  };
+
   useEffect(() => {
     if (activeDocs.length === 0 || currentDocId) return;
     selectDoc(activeDocs[0].id);
@@ -30,6 +53,8 @@ export const useDocsPage = () => {
     activeDocs,
     currentDoc,
     handleCreate,
+    handleExportDoc,
+    handleDuplicateDoc,
     selectDoc,
     updateDoc,
   };
