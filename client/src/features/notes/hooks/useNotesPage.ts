@@ -1,5 +1,12 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useApp } from "../../workspace/context/AppContext";
+
+const sanitizeFileName = (value: string) =>
+  value
+    .replace(/[^a-zA-Z0-9-_\.\s]/g, "")
+    .trim()
+    .replace(/\s+/g, "_")
+    .slice(0, 80) || "note";
 
 export const useNotesPage = () => {
   const {
@@ -11,30 +18,41 @@ export const useNotesPage = () => {
     updateNote,
   } = useApp();
 
-  const activeNotes = notes.filter(
-    (note: any) => note.projectId === (currentProjectId ?? null)
+  const activeNotes = useMemo(
+    () =>
+      notes.filter((note: any) => note.projectId === (currentProjectId ?? null)),
+    [notes, currentProjectId]
   );
-  const currentNote =
-    notes.find((note: any) => note.id === currentNoteId) || activeNotes[0];
+
+  const currentNote = useMemo(
+    () =>
+      notes.find((note: any) => note.id === currentNoteId) || activeNotes[0] || null,
+    [notes, activeNotes, currentNoteId]
+  );
 
   const handleCreate = () => {
-    createNote("Untitled Note", "", currentProjectId);
+    return createNote("Untitled Note", "", currentProjectId);
   };
 
   const handleDuplicateNote = (noteId: string) => {
     const note = notes.find((item: any) => item.id === noteId);
-    if (!note) return;
-    createNote(`Copy of ${note.title}`, note.content, note.projectId);
+    if (!note) return null;
+
+    const newId = createNote(`Copy of ${note.title || "Note"}`, note.content, note.projectId);
+    return newId;
   };
 
   const handleExportNote = (note: any) => {
     if (!note) return;
-    const content = `# ${note.title}\n\n${note.content || ""}`;
+
+    const filename = sanitizeFileName(note.title || "note");
+    const content = `# ${note.title || "Untitled Note"}\n\n${note.content || ""}`;
     const blob = new Blob([content], { type: "text/markdown;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
+
     link.href = url;
-    link.download = `${note.title?.replace(/\s+/g, "_") || "note"}.md`;
+    link.download = `${filename}.md`;
     document.body.appendChild(link);
     link.click();
     link.remove();
