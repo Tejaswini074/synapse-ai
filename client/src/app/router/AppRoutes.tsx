@@ -11,6 +11,7 @@ const Settings = lazy(() => import("../../features/settings/pages/SettingsPage")
 const Projects = lazy(() => import("../../features/projects/pages/ProjectsPage"));
 const Notes = lazy(() => import("../../features/notes/pages/NotesPage"));
 const Docs = lazy(() => import("../../features/docs/pages/DocsPage"));
+const Hub = lazy(() => import("../../features/hub/pages/HubPage"));
 
 const RouteLoader = () => (
   <div className="flex h-screen w-full items-center justify-center bg-[#040508] text-white">
@@ -73,6 +74,14 @@ const AppRoutes = () => {
             element={
               <PrivateRoute>
                 <Projects />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/hub"
+            element={
+              <PrivateRoute>
+                <Hub />
               </PrivateRoute>
             }
           />

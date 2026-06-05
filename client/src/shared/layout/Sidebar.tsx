@@ -5,6 +5,7 @@ import {
   ChevronDown,
   FileText,
   Folder,
+  Grid3X3,
   LogOut,
   MessageSquare,
   PanelLeft,
@@ -71,6 +72,11 @@ const Sidebar = () => {
   const openProjectChat = (projectId: number) => {
     setCurrentProjectId(projectId);
     navigate("/");
+    closeSidebar();
+  };
+
+  const openHub = () => {
+    navigate("/hub");
     closeSidebar();
   };
 
@@ -347,6 +353,17 @@ const Sidebar = () => {
                   >
                     <MessageSquare size={13} />
                     Main Chat
+                  </button>
+                  <button
+                    onClick={openHub}
+                    className={`mt-1 flex w-full items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[12.5px] font-bold transition-all ${
+                      location.pathname === "/hub"
+                        ? "bg-cyan-500/10 text-cyan-300"
+                        : "text-gray-500 hover:text-gray-200"
+                    }`}
+                  >
+                    <Grid3X3 size={13} />
+                    Synapse Hub
                   </button>
                   <div className="mt-1 space-y-0.5 border-t border-white/[0.03] pt-1.5">
                     {filteredGeneralChats.slice(0, 3).map((chat: any) => renderWorkspaceItem(chat, "chat"))}

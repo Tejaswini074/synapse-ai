@@ -26,8 +26,15 @@ const noteFormats = [
 ];
 
 const Notes = () => {
-  const { activeNotes, currentNote, handleCreate, selectNote, updateNote } =
-    useNotesPage();
+  const {
+    activeNotes,
+    currentNote,
+    handleCreate,
+    handleDuplicateNote,
+    handleExportNote,
+    selectNote,
+    updateNote,
+  } = useNotesPage();
 
   return (
     <WorkspaceShell
@@ -126,6 +133,21 @@ const Notes = () => {
                     </button>
                   ))}
                 </div>
+              </div>
+
+              <div className="mb-5 flex flex-wrap gap-2">
+                <button
+                  onClick={() => handleExportNote(currentNote)}
+                  className="rounded-2xl border border-white/[0.06] bg-blue-500/10 px-4 py-2 text-sm font-semibold text-blue-100 transition hover:bg-blue-500/15"
+                >
+                  Export Note
+                </button>
+                <button
+                  onClick={() => handleDuplicateNote(currentNote.id)}
+                  className="rounded-2xl border border-white/[0.06] bg-white/[0.05] px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/[0.08]"
+                >
+                  Duplicate Note
+                </button>
               </div>
 
               <input

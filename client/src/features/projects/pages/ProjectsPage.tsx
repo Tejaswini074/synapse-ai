@@ -136,6 +136,24 @@ const Projects = () => {
     >
       <div className="custom-scrollbar min-w-0 flex-1 overflow-y-auto bg-[linear-gradient(180deg,_rgba(13,17,26,0.95),_#050609)]">
         <div className="mx-auto max-w-7xl p-5 pb-24 md:p-8 lg:p-10">
+          <div className="mb-6 grid gap-4 sm:grid-cols-3">
+            <div className="rounded-3xl border border-white/[0.06] bg-[#0b0f17] p-5 shadow-[0_18px_50px_rgba(0,0,0,0.2)]">
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-gray-500">Total Projects</p>
+              <p className="mt-4 text-4xl font-black text-white">{projects.length}</p>
+              <p className="mt-2 text-sm text-gray-400">Active workspaces ready for AI collaboration.</p>
+            </div>
+            <div className="rounded-3xl border border-white/[0.06] bg-[#0b0f17] p-5 shadow-[0_18px_50px_rgba(0,0,0,0.2)]">
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-gray-500">Saved Items</p>
+              <p className="mt-4 text-4xl font-black text-white">{chats.length + notes.length + docs.length}</p>
+              <p className="mt-2 text-sm text-gray-400">Chats, notes, and documents in your workspace.</p>
+            </div>
+            <div className="rounded-3xl border border-white/[0.06] bg-[#0b0f17] p-5 shadow-[0_18px_50px_rgba(0,0,0,0.2)]">
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-gray-500">Workspace Mode</p>
+              <p className="mt-4 text-4xl font-black text-white">{view === "grid" ? "Board" : "List"}</p>
+              <p className="mt-2 text-sm text-gray-400">Switch layouts for project organization.</p>
+            </div>
+          </div>
+
           <section className="mb-6 grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
             <div className="rounded-2xl border border-white/[0.07] bg-[#0a0d14] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.28)] md:p-6">
               <div className="mb-6 flex flex-wrap items-start justify-between gap-4">

@@ -90,12 +90,20 @@ const Settings = () => {
       subtitle="Manage your profile, preferences, and account access from one clean workspace panel."
       contentClassName="overflow-hidden"
       actions={
-        <button
-          onClick={() => navigate("/")}
-          className="rounded-lg border border-white/10 p-2 text-gray-400 transition hover:bg-white/5 hover:text-white"
-        >
-          <X size={18} />
-        </button>
+        <>
+          <button
+            onClick={handleSaveProfile}
+            className="hidden items-center gap-2 rounded-lg border border-blue-400/20 bg-blue-500/10 px-3 py-2 text-sm font-semibold text-blue-100 transition hover:bg-blue-500/15 md:flex"
+          >
+            Save changes
+          </button>
+          <button
+            onClick={() => navigate("/")}
+            className="rounded-lg border border-white/10 p-2 text-gray-400 transition hover:bg-white/5 hover:text-white"
+          >
+            <X size={18} />
+          </button>
+        </>
       }
     >
       <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden">
@@ -148,6 +156,24 @@ const Settings = () => {
                   Adjust your workspace behavior and review your active account.
                 </p>
               </header>
+
+              <div className="mb-6 grid gap-4 sm:grid-cols-3">
+                <div className="rounded-3xl border border-white/[0.05] bg-[#0b0f17] p-5 text-white shadow-[0_18px_50px_rgba(0,0,0,0.2)]">
+                  <p className="text-xs font-black uppercase tracking-[0.2em] text-gray-500">Theme</p>
+                  <p className="mt-4 text-2xl font-black">Dark Obsidian</p>
+                  <p className="mt-2 text-sm text-gray-400">Optimized for long AI sessions and low glare.</p>
+                </div>
+                <div className="rounded-3xl border border-white/[0.05] bg-[#0b0f17] p-5 text-white shadow-[0_18px_50px_rgba(0,0,0,0.2)]">
+                  <p className="text-xs font-black uppercase tracking-[0.2em] text-gray-500">Workspace</p>
+                  <p className="mt-4 text-2xl font-black">Pro Flow</p>
+                  <p className="mt-2 text-sm text-gray-400">Quick access, notes, docs, and AI in one place.</p>
+                </div>
+                <div className="rounded-3xl border border-white/[0.05] bg-[#0b0f17] p-5 text-white shadow-[0_18px_50px_rgba(0,0,0,0.2)]">
+                  <p className="text-xs font-black uppercase tracking-[0.2em] text-gray-500">Security</p>
+                  <p className="mt-4 text-2xl font-black">Protected</p>
+                  <p className="mt-2 text-sm text-gray-400">Save chats to notes and keep private folders secure.</p>
+                </div>
+              </div>
 
               <div className="grid max-w-4xl gap-6 lg:grid-cols-[1.2fr_0.8fr]">
                 <div className="space-y-6 rounded-[28px] border border-white/[0.05] bg-white/[0.02] p-6">

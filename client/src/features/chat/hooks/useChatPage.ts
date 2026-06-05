@@ -7,6 +7,9 @@ export const useChatPage = () => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [dark, setDark] = useState(true);
+  const [selectedModel, setSelectedModel] = useState("GPT-4o");
+  const [temperature, setTemperature] = useState(0.7);
+  const [currentChatTitle, setCurrentChatTitle] = useState("New Conversation");
 
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
@@ -27,6 +30,10 @@ export const useChatPage = () => {
     (chat: any) => chat.projectId === currentProjectId
   );
   const activeChats = currentProjectId ? projectChats : globalChats;
+  const messageCount = messages.length;
+  const assistantMessageCount = messages.filter(
+    (message) => message.role === "assistant"
+  ).length;
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -35,9 +42,58 @@ export const useChatPage = () => {
   useEffect(() => {
     const chat = activeChats.find((entry: any) => entry.id === currentChatId);
     setMessages(chat?.messages || []);
+    setCurrentChatTitle(chat?.title || "New Conversation");
   }, [activeChats, currentChatId]);
 
   const toggleTheme = () => setDark((prev) => !prev);
+
+  const handleNewChat = () => {
+    createChat([]);
+    setMessages([]);
+    setInput("");
+    setCurrentChatTitle("New Conversation");
+  };
+
+  const handleClearConversation = () => {
+    if (currentChatId) {
+      updateChatMessages(currentChatId, []);
+    }
+    setMessages([]);
+    setInput("");
+  };
+
+  const handleDownloadTranscript = () => {
+    if (messages.length === 0) return;
+
+    const transcript = messages
+      .map((message) => `${message.role.toUpperCase()}\n${message.content}`)
+      .join("\n\n");
+
+    const blob = new Blob([transcript], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = `${currentChatTitle
+      .replace(/\s+/g, "_")
+      .toLowerCase() || "synapse-chat"}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleModelSelect = (model: string) => {
+    setSelectedModel(model);
+  };
+
+  const handleTemperatureChange = (value: number) => {
+    setTemperature(value);
+  };
+
+  const handleQuickAction = (prompt: string) => {
+    setInput(prompt);
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -76,7 +132,11 @@ export const useChatPage = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ messages: updatedMessages }),
+        body: JSON.stringify({
+          messages: updatedMessages,
+          model: selectedModel,
+          temperature,
+        }),
       });
 
       const reader = res.body?.getReader();
@@ -111,16 +171,27 @@ export const useChatPage = () => {
   };
 
   return {
+    assistantMessageCount,
     bottomRef,
     currentChatId,
+    currentChatTitle,
     dark,
+    handleClearConversation,
+    handleDownloadTranscript,
     handleKeyDown,
+    handleModelSelect,
+    handleNewChat,
+    handleQuickAction,
     handleSaveToNotes,
     handleSend,
+    handleTemperatureChange,
     input,
     loading,
+    messageCount,
     messages,
+    selectedModel,
     setInput,
+    temperature,
     toggleTheme,
   };
 };
