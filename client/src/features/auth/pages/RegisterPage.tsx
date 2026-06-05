@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import {
   UserPlus,
   Mail,
@@ -8,6 +8,7 @@ import {
   AlertCircle,
   BadgeInfo,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { registerRequest } from "../../../shared/api/authApi";
 
 const Register = () => {
@@ -24,7 +25,9 @@ const Register = () => {
     "http://localhost:5000/api/auth/github";
   const socialAuthEnabled = import.meta.env.VITE_ENABLE_SOCIAL_AUTH === "true";
 
-  const handleRegister = async () => {
+  const handleRegister = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
     if (!email || !password) {
       setError("Email and password are required.");
       return;
@@ -129,7 +132,7 @@ const Register = () => {
         </div>
 
         <div className="relative overflow-hidden rounded-[28px] border border-white/[0.06] bg-[#0f111a] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)] md:p-8">
-          <div className="space-y-5">
+          <form onSubmit={handleRegister} className="space-y-5">
             {!socialAuthEnabled && (
               <div className="flex items-start gap-2 rounded-2xl border border-amber-500/15 bg-amber-500/8 px-4 py-3 text-xs leading-5 text-amber-200">
                 <BadgeInfo size={16} className="mt-0.5 shrink-0" />
@@ -236,7 +239,7 @@ const Register = () => {
             )}
 
             <button
-              onClick={() => void handleRegister()}
+              type="submit"
               disabled={loading || !email || !password}
               className="group mt-2 flex w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 p-4 font-bold text-white shadow-[0_10px_25px_rgba(16,185,129,0.2)] transition-all active:scale-[0.98] hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-50"
             >
@@ -258,12 +261,12 @@ const Register = () => {
             </div>
             <p className="text-xs font-medium text-gray-500">
               Already a member?
-              <a
-                href="/login"
+              <Link
+                to="/login"
                 className="ml-1.5 font-bold text-emerald-400 underline-offset-4 transition-all hover:text-emerald-300 hover:underline"
               >
                 Login
-              </a>
+              </Link>
             </p>
           </div>
         </div>

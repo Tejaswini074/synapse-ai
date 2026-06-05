@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import {
   Mail,
   ArrowRight,
@@ -9,7 +9,7 @@ import {
   BadgeInfo,
 } from "lucide-react";
 import { useApp } from "../../workspace/context/AppContext";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { loginRequest } from "../../../shared/api/authApi";
 
 const Login = () => {
@@ -46,7 +46,11 @@ const Login = () => {
       .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
       .join(" ");
 
-  const handleLogin = async () => {
+  const navigate = useNavigate();
+
+  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
     if (!email || !password) {
       setError("Email and password are required.");
       return;
@@ -56,13 +60,13 @@ const Login = () => {
     setError("");
 
     try {
-      const data = await loginRequest({ email, password });
+      const data = await loginRequest({ email: email.trim(), password });
       localStorage.setItem("token", data.token);
       setCurrentUser({
         name: data.user?.name || formatNameFromEmail(data.user?.email || email),
         email: data.user?.email || email,
       });
-      window.location.href = "/";
+      navigate("/", { replace: true });
     } catch (err) {
       const message =
         err instanceof Error
@@ -156,7 +160,7 @@ const Login = () => {
         </div>
 
         <div className="relative overflow-hidden rounded-[28px] border border-white/[0.06] bg-[#0f111a] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)] md:p-8">
-          <div className="space-y-6">
+          <form onSubmit={handleLogin} className="space-y-6">
             {!socialAuthEnabled && (
               <div className="flex items-start gap-2 rounded-2xl border border-amber-500/15 bg-amber-500/8 px-4 py-3 text-xs leading-5 text-amber-200">
                 <BadgeInfo size={16} className="mt-0.5 shrink-0" />
@@ -257,7 +261,7 @@ const Login = () => {
             )}
 
             <button
-              onClick={() => void handleLogin()}
+              type="submit"
               disabled={loading || !email || !password}
               className="flex w-full items-center justify-center gap-3 rounded-2xl bg-white p-4 font-bold text-black shadow-[0_0_20px_rgba(255,255,255,0.05)] transition-all active:scale-[0.98] hover:bg-gray-100 disabled:cursor-not-allowed disabled:grayscale disabled:opacity-50"
             >
@@ -271,6 +275,7 @@ const Login = () => {
               )}
             </button>
           </div>
+        </form>
 
           <div className="mt-10 flex flex-col items-center gap-4 border-t border-white/[0.03] pt-8">
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-600">
@@ -279,12 +284,12 @@ const Login = () => {
             </div>
             <p className="text-xs text-gray-500">
               New here?
-              <a
-                href="/register"
+              <Link
+                to="/register"
                 className="ml-1.5 font-bold text-blue-400 underline-offset-4 transition-colors hover:text-blue-300 hover:underline"
               >
                 Request Access
-              </a>
+              </Link>
             </p>
           </div>
         </div>
