@@ -221,6 +221,7 @@ const Login = () => {
                 <input
                   type="email"
                   value={email}
+                  autoComplete="email"
                   className="w-full rounded-2xl border border-white/5 bg-black/40 p-4 pl-12 text-sm font-medium text-white outline-none transition-all placeholder:text-gray-700 focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/5"
                   placeholder="name@company.com"
                   onChange={(event) => setEmail(event.target.value)}
@@ -241,14 +242,10 @@ const Login = () => {
                 <input
                   type="password"
                   value={password}
+                  autoComplete="current-password"
                   className="w-full rounded-2xl border border-white/5 bg-black/40 p-4 pl-12 text-sm font-medium text-white outline-none transition-all placeholder:text-gray-700 focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/5"
                   placeholder="Enter your password"
                   onChange={(event) => setPassword(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") {
-                      void handleLogin();
-                    }
-                  }}
                 />
               </div>
             </div>
@@ -274,10 +271,9 @@ const Login = () => {
                 />
               )}
             </button>
-          </div>
-        </form>
+          </form>
 
-          <div className="mt-10 flex flex-col items-center gap-4 border-t border-white/[0.03] pt-8">
+          <div className="mt-10 flex flex-col items-center gap-4 border-t border-white/[0.03] pt-8\">
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-600">
               <ShieldCheck size={12} />
               Secure Enterprise Login

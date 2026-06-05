@@ -193,6 +193,7 @@ const Register = () => {
                 <input
                   type="email"
                   value={email}
+                  autoComplete="email"
                   className="w-full rounded-2xl border border-white/5 bg-black/40 p-4 pl-12 text-sm font-medium text-white outline-none transition-all placeholder:text-gray-700 focus:border-emerald-500/40 focus:ring-4 focus:ring-emerald-500/5"
                   placeholder="john@example.com"
                   onChange={(event) => setEmail(event.target.value)}
@@ -213,14 +214,10 @@ const Register = () => {
                 <input
                   type="password"
                   value={password}
+                  autoComplete="new-password"
                   className="w-full rounded-2xl border border-white/5 bg-black/40 p-4 pl-12 text-sm font-medium text-white outline-none transition-all placeholder:text-gray-700 focus:border-emerald-500/40 focus:ring-4 focus:ring-emerald-500/5"
                   placeholder="Create a password"
                   onChange={(event) => setPassword(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") {
-                      void handleRegister();
-                    }
-                  }}
                 />
               </div>
             </div>
@@ -252,7 +249,7 @@ const Register = () => {
                 />
               )}
             </button>
-          </div>
+          </form>
 
           <div className="mt-8 border-t border-white/[0.03] pt-8 text-center">
             <div className="mb-4 flex items-center justify-center gap-2 text-[9px] font-bold uppercase tracking-[0.2em] text-gray-600">
