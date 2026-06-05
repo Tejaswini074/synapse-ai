@@ -8,6 +8,7 @@ import {
   LogOut,
   MessageSquare,
   PanelLeft,
+  Plus,
   Search,
   Settings,
   Sparkles,
@@ -70,6 +71,23 @@ const Sidebar = () => {
   const openProjectChat = (projectId: number) => {
     setCurrentProjectId(projectId);
     navigate("/");
+    closeSidebar();
+  };
+
+  const handleCreateProject = () => {
+    navigate("/projects", { state: { focusCreate: true } });
+    closeSidebar();
+  };
+
+  const handleCreateNote = () => {
+    createNote("Untitled Note", "", currentProjectId);
+    navigate("/notes");
+    closeSidebar();
+  };
+
+  const handleCreateDoc = () => {
+    createDoc("Untitled Doc", "", currentProjectId);
+    navigate("/docs");
     closeSidebar();
   };
 
@@ -256,8 +274,8 @@ const Sidebar = () => {
         }`}
       >
         {/* Brand Header */}
-        <div className="px-5 py-8">
-          <div className="mb-8 flex items-center justify-between">
+        <div className="px-5 py-5">
+          <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 shadow-[0_0_15px_rgba(59,130,246,0.3)] ring-1 ring-white/10">
                 <Sparkles size={18} className="text-white" />
@@ -272,9 +290,12 @@ const Sidebar = () => {
               <X size={16} />
             </button>
           </div>
+        </div>
 
-          <div className="relative group">
-            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 transition-colors group-focus-within:text-blue-500" />
+        {/* Navigation Content */}
+        <div className="custom-scrollbar flex-1 overflow-y-auto px-4 py-2">
+          <div className="group relative mb-6">
+            <Search size={13} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 transition-colors group-focus-within:text-blue-500" />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -282,22 +303,29 @@ const Sidebar = () => {
               placeholder="Search..."
             />
           </div>
-        </div>
 
-        {/* Navigation Content */}
-        <div className="custom-scrollbar flex-1 overflow-y-auto px-4 py-2">
-          <div className="mb-6">
+          <div className="mb-6 flex items-center gap-2">
             <button
-              onClick={() => { navigate("/projects"); closeSidebar(); }}
-              className={routeButtonClass(location.pathname === "/projects")}
+              onClick={() => setProjectsExpanded((prev) => !prev)}
+              className={`${routeButtonClass(location.pathname === "/projects" || projectsExpanded)} flex-1`}
             >
               <span className="flex items-center justify-between">
                 <span className="flex items-center gap-3">
-                  <Folder size={14} className={location.pathname === "/projects" ? "text-blue-400" : "text-gray-600"} />
+                  <Folder size={14} className={location.pathname === "/projects" || projectsExpanded ? "text-blue-400" : "text-gray-600"} />
                   Projects Hub
                 </span>
-                <span className="text-[10px] font-bold text-gray-600">{projects.length}</span>
+                <span className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold text-gray-600">{projects.length}</span>
+                  <ChevronDown size={10} className={`transition-transform ${projectsExpanded ? "" : "-rotate-90"}`} />
+                </span>
               </span>
+            </button>
+            <button
+              onClick={handleCreateProject}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.05] bg-white/[0.02] text-gray-400 transition-all hover:bg-white/[0.06] hover:text-white"
+              title="New Project"
+            >
+              <Plus size={15} />
             </button>
           </div>
 
@@ -337,7 +365,7 @@ const Sidebar = () => {
 
             {projectsExpanded && (
               <div className="mt-3 space-y-3">
-                {filteredProjects.map(({ project, projectChats }) => {
+                {filteredProjects.map(({ project, projectChats, projectNotes, projectDocs }) => {
                   const isActive = currentProjectId === project.id;
                   return (
                     <div key={project.id} className={`rounded-xl border transition-all ${isActive ? "border-blue-500/20 bg-blue-500/[0.03]" : "border-white/[0.03] hover:bg-white/[0.01]"}`}>
@@ -347,6 +375,8 @@ const Sidebar = () => {
                         </button>
                         <div className="space-y-0.5">
                           {projectChats.slice(0, 2).map((chat: any) => renderWorkspaceItem(chat, "chat"))}
+                          {projectNotes.slice(0, 2).map((note: any) => renderWorkspaceItem(note, "note"))}
+                          {projectDocs.slice(0, 2).map((doc: any) => renderWorkspaceItem(doc, "doc"))}
                         </div>
                       </div>
                     </div>
@@ -359,25 +389,42 @@ const Sidebar = () => {
 
         {/* Premium Footer - Redesigned for Compact Professionalism */}
         <div className="mt-auto border-t border-white/[0.05] bg-[#050609]/80 p-4">
-          
           {/* Quick Access Grid */}
-          <div className="mb-4 grid grid-cols-2 gap-2">
-            {[
-              { icon: BookOpen, label: "Notes", action: openNotesWorkspace },
-              { icon: FileText, label: "Docs", action: openDocsWorkspace }
-            ].map((btn, i) => (
-              <button key={i} onClick={btn.action} className="flex items-center justify-center gap-2 rounded-lg border border-white/[0.03] bg-white/[0.02] py-2 text-gray-500 hover:bg-white/[0.05] hover:text-gray-300 active:scale-95 transition-all">
-                <btn.icon size={13} />
-                <span className="text-[10px] font-bold uppercase tracking-wider">{btn.label}</span>
+          <div className="mb-4 space-y-2">
+            <div className="flex items-center gap-2">
+              <button onClick={openNotesWorkspace} className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-white/[0.03] bg-white/[0.02] py-2 text-gray-500 hover:bg-white/[0.05] hover:text-gray-300 active:scale-95 transition-all">
+                <BookOpen size={13} />
+                <span className="text-[10px] font-bold uppercase tracking-wider">Notes</span>
               </button>
-            ))}
+              <button
+                onClick={handleCreateNote}
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.03] bg-white/[0.02] text-gray-400 transition-all hover:bg-white/[0.05] hover:text-white"
+                title="New Note"
+              >
+                <Plus size={15} />
+              </button>
+            </div>
+            <div className="flex items-center gap-2">
+              <button onClick={openDocsWorkspace} className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-white/[0.03] bg-white/[0.02] py-2 text-gray-500 hover:bg-white/[0.05] hover:text-gray-300 active:scale-95 transition-all">
+                <FileText size={13} />
+                <span className="text-[10px] font-bold uppercase tracking-wider">Docs</span>
+              </button>
+              <button
+                onClick={handleCreateDoc}
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.03] bg-white/[0.02] text-gray-400 transition-all hover:bg-white/[0.05] hover:text-white"
+                title="New Doc"
+              >
+                <Plus size={15} />
+              </button>
+            </div>
           </div>
 
           {/* Compact User & Logout Bar */}
           <div className="flex items-center gap-2">
-            <div 
+            <button
+              type="button"
               onClick={openSettings}
-              className="flex flex-1 cursor-pointer items-center gap-2.5 rounded-xl border border-white/[0.06] bg-[#0c0d12] p-2 ring-1 ring-white/5 hover:bg-white/[0.04] transition-all"
+              className="flex flex-1 items-center gap-2.5 rounded-xl border border-white/[0.06] bg-[#0c0d12] p-2 text-left ring-1 ring-white/5 transition-all hover:bg-white/[0.04]"
             >
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-slate-700 to-slate-900 text-[11px] font-black text-white ring-1 ring-white/10 shadow-lg">
                 {userInitials || <CircleUserRound size={14} />}
@@ -387,7 +434,7 @@ const Sidebar = () => {
                 <p className="truncate text-[9px] font-medium text-gray-600 uppercase tracking-tighter">Pro Tier</p>
               </div>
               <Settings size={12} className="text-gray-700" />
-            </div>
+            </button>
 
             <button 
               onClick={handleLogout}

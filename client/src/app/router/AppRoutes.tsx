@@ -1,14 +1,26 @@
+import { lazy, Suspense, type ReactNode } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Chat from "../../features/chat/pages/ChatPage";
-import Login from "../../features/auth/pages/LoginPage";
-import Register from "../../features/auth/pages/RegisterPage";
-import AuthCallbackPage from "../../features/auth/pages/AuthCallbackPage";
-import Settings from "../../features/settings/pages/SettingsPage";
-import Projects from "../../features/projects/pages/ProjectsPage";
-import Notes from "../../features/notes/pages/NotesPage";
-import Docs from "../../features/docs/pages/DocsPage";
 
-const PrivateRoute = ({ children }: any) => {
+const Chat = lazy(() => import("../../features/chat/pages/ChatPage"));
+const Login = lazy(() => import("../../features/auth/pages/LoginPage"));
+const Register = lazy(() => import("../../features/auth/pages/RegisterPage"));
+const AuthCallbackPage = lazy(
+  () => import("../../features/auth/pages/AuthCallbackPage")
+);
+const Settings = lazy(() => import("../../features/settings/pages/SettingsPage"));
+const Projects = lazy(() => import("../../features/projects/pages/ProjectsPage"));
+const Notes = lazy(() => import("../../features/notes/pages/NotesPage"));
+const Docs = lazy(() => import("../../features/docs/pages/DocsPage"));
+
+const RouteLoader = () => (
+  <div className="flex h-screen w-full items-center justify-center bg-[#040508] text-white">
+    <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-gray-300">
+      Loading Synapse...
+    </div>
+  </div>
+);
+
+const PrivateRoute = ({ children }: { children: ReactNode }) => {
   const token = localStorage.getItem("token");
   return token ? children : <Navigate to="/login" />;
 };
@@ -16,22 +28,59 @@ const PrivateRoute = ({ children }: any) => {
 const AppRoutes = () => {
   return (
     <BrowserRouter>
-      <Routes>
-        {/* Public */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/auth/callback" element={<AuthCallbackPage />} />
+      <Suspense fallback={<RouteLoader />}>
+        <Routes>
+          {/* Public */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/auth/callback" element={<AuthCallbackPage />} />
 
-        {/* Private */}
-        <Route path="/" element={<PrivateRoute><Chat /></PrivateRoute>} />
-        <Route path="/notes" element={<PrivateRoute><Notes /></PrivateRoute>} />
-        <Route path="/docs" element={<PrivateRoute><Docs /></PrivateRoute>} />
-        <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
-        <Route path="/projects" element={<PrivateRoute><Projects /></PrivateRoute>} />
+          {/* Private */}
+          <Route
+            path="/"
+            element={
+              <PrivateRoute>
+                <Chat />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/notes"
+            element={
+              <PrivateRoute>
+                <Notes />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/docs"
+            element={
+              <PrivateRoute>
+                <Docs />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <PrivateRoute>
+                <Settings />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/projects"
+            element={
+              <PrivateRoute>
+                <Projects />
+              </PrivateRoute>
+            }
+          />
 
-        {/* Fallback */}
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 };

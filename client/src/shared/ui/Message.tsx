@@ -1,8 +1,6 @@
 // message.tsx
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { Copy, Bot, User, Check } from "lucide-react";
 import { useState } from "react";
 
@@ -74,21 +72,11 @@ const Message = ({ role, content }: Props) => {
                         <Copy size={12} /> Copy
                       </button>
                     </div>
-                    {/* Highlighter */}
-                    <SyntaxHighlighter
-                      style={vscDarkPlus}
-                      language={match[1]}
-                      PreTag="div"
-                      customStyle={{ 
-                        margin: 0, 
-                        padding: '1.25rem', 
-                        fontSize: '0.85rem', 
-                        lineHeight: '1.6',
-                        background: 'transparent' 
-                      }}
-                    >
-                      {String(children).replace(/\n$/, "")}
-                    </SyntaxHighlighter>
+                    <pre className="custom-scrollbar overflow-x-auto bg-transparent p-5 text-[0.85rem] leading-7 text-gray-200">
+                      <code className="font-mono">
+                        {String(children).replace(/\n$/, "")}
+                      </code>
+                    </pre>
                   </div>
                 ) : (
                   <code {...props} className="font-mono text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded-md">

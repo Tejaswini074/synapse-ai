@@ -1,6 +1,7 @@
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 const AppContext = createContext<any>(null);
+const WORKSPACE_STORAGE_KEY = "synapseWorkspace";
 
 const createTimestamp = () => new Date().toISOString();
 
@@ -13,24 +14,71 @@ const getStoredUser = () => {
   }
 };
 
+const getStoredWorkspace = () => {
+  try {
+    const stored = localStorage.getItem(WORKSPACE_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : {};
+  } catch {
+    return {};
+  }
+};
+
 export const AppProvider = ({ children }: any) => {
+  const storedWorkspace = getStoredWorkspace();
   const [currentUser, setCurrentUserState] = useState<any>(getStoredUser);
-  const [projects, setProjects] = useState<any[]>([]);
-  const [currentProjectId, setCurrentProjectId] = useState<any>(null);
+  const [projects, setProjects] = useState<any[]>(
+    storedWorkspace.projects || []
+  );
+  const [currentProjectId, setCurrentProjectId] = useState<any>(
+    storedWorkspace.currentProjectId ?? null
+  );
 
-  const [chats, setChats] = useState<any[]>([]);
-  const [currentChatId, setCurrentChatId] = useState<any>(null);
+  const [chats, setChats] = useState<any[]>(storedWorkspace.chats || []);
+  const [currentChatId, setCurrentChatId] = useState<any>(
+    storedWorkspace.currentChatId ?? null
+  );
 
-  const [notes, setNotes] = useState<any[]>([]);
-  const [currentNoteId, setCurrentNoteId] = useState<any>(null);
+  const [notes, setNotes] = useState<any[]>(storedWorkspace.notes || []);
+  const [currentNoteId, setCurrentNoteId] = useState<any>(
+    storedWorkspace.currentNoteId ?? null
+  );
 
-  const [docs, setDocs] = useState<any[]>([]);
-  const [currentDocId, setCurrentDocId] = useState<any>(null);
+  const [docs, setDocs] = useState<any[]>(storedWorkspace.docs || []);
+  const [currentDocId, setCurrentDocId] = useState<any>(
+    storedWorkspace.currentDocId ?? null
+  );
+
+  useEffect(() => {
+    localStorage.setItem(
+      WORKSPACE_STORAGE_KEY,
+      JSON.stringify({
+        projects,
+        currentProjectId,
+        chats,
+        currentChatId,
+        notes,
+        currentNoteId,
+        docs,
+        currentDocId,
+      })
+    );
+  }, [
+    projects,
+    currentProjectId,
+    chats,
+    currentChatId,
+    notes,
+    currentNoteId,
+    docs,
+    currentDocId,
+  ]);
 
   const createProject = (name: string) => {
     const newProject = {
       id: Date.now(),
       name,
+      privacy: "normal",
+      status: "active",
       createdAt: createTimestamp(),
     };
 
@@ -62,6 +110,9 @@ export const AppProvider = ({ children }: any) => {
       title: initialMessages[0]?.content?.slice(0, 25) || "New Chat",
       messages: initialMessages,
       projectId: targetProjectId ?? null,
+      mode: "standard",
+      archived: false,
+      secret: false,
       createdAt: createTimestamp(),
       updatedAt: createTimestamp(),
     };
@@ -126,6 +177,8 @@ export const AppProvider = ({ children }: any) => {
       title,
       content,
       projectId: targetProjectId ?? null,
+      format: "markdown",
+      encrypted: false,
       createdAt: createTimestamp(),
       updatedAt: createTimestamp(),
     };
@@ -167,6 +220,8 @@ export const AppProvider = ({ children }: any) => {
       title,
       content,
       projectId: targetProjectId ?? null,
+      type: "document",
+      encrypted: false,
       createdAt: createTimestamp(),
       updatedAt: createTimestamp(),
     };

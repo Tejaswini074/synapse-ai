@@ -54,7 +54,7 @@ const WorkspaceShell = ({
         </header>
 
         {/* Content Area */}
-        <div className={`relative min-h-0 flex-1 overflow-y-auto custom-scrollbar ${contentClassName}`}>
+        <div className={`relative flex min-h-0 flex-1 flex-col overflow-y-auto custom-scrollbar ${contentClassName}`}>
           {children}
         </div>
       </main>
