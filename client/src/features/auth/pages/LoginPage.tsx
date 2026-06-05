@@ -6,6 +6,7 @@ import {
   ShieldCheck,
   LockKeyhole,
   AlertCircle,
+  BadgeInfo,
 } from "lucide-react";
 import { useApp } from "../../workspace/context/AppContext";
 import { useLocation } from "react-router-dom";
@@ -24,6 +25,7 @@ const Login = () => {
   const githubAuthUrl =
     import.meta.env.VITE_GITHUB_AUTH_URL ||
     "http://localhost:5000/api/auth/github";
+  const socialAuthEnabled = import.meta.env.VITE_ENABLE_SOCIAL_AUTH === "true";
 
   useEffect(() => {
     const routedError = (location.state as { error?: string } | null)?.error;
@@ -79,19 +81,62 @@ const Login = () => {
     }
   };
 
-  const handleSocialAuth = (url: string) => {
+  const handleSocialAuth = (url: string, provider: "Google" | "GitHub") => {
+    if (!socialAuthEnabled) {
+      setError(
+        `${provider} login needs OAuth credentials first. Use email login now, or set VITE_ENABLE_SOCIAL_AUTH=true after configuring the provider.`
+      );
+      return;
+    }
+
     window.location.href = url;
   };
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center bg-[#050505] px-4 font-sans selection:bg-blue-500/30">
+    <div className="flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#050505] px-4 py-8 font-sans selection:bg-blue-500/30">
       <div className="pointer-events-none absolute left-0 top-0 h-full w-full overflow-hidden">
         <div className="absolute -left-[10%] -top-[10%] h-[40%] w-[40%] rounded-full bg-blue-600/5 blur-[120px]" />
         <div className="absolute -bottom-[10%] -right-[10%] h-[40%] w-[40%] rounded-full bg-indigo-600/5 blur-[120px]" />
       </div>
 
-      <div className="relative z-10 w-full max-w-[420px]">
-        <div className="mb-10 flex flex-col items-center text-center">
+      <div className="relative z-10 grid w-full max-w-6xl gap-6 lg:grid-cols-[minmax(0,1fr)_440px] lg:items-center">
+        <section className="hidden rounded-[28px] border border-white/[0.06] bg-white/[0.025] p-8 shadow-[0_24px_80px_rgba(0,0,0,0.35)] lg:block">
+          <div className="mb-10 flex items-center gap-3">
+            <div className="rounded-2xl border border-blue-400/20 bg-blue-500/10 p-3 text-blue-200">
+              <Sparkles size={24} />
+            </div>
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-gray-600">
+                Synapse AI
+              </p>
+              <h2 className="text-2xl font-black text-white">
+                Secure AI workspace
+              </h2>
+            </div>
+          </div>
+
+          <div className="grid gap-3">
+            {[
+              "Chat with multiple AI models",
+              "Save chats into offline notes",
+              "Organize projects, docs, research, and code",
+              "Prepare for encrypted private folders",
+            ].map((item) => (
+              <div
+                key={item}
+                className="flex items-center gap-3 rounded-2xl border border-white/[0.05] bg-black/20 p-4"
+              >
+                <ShieldCheck size={16} className="text-emerald-300" />
+                <span className="text-sm font-semibold text-gray-300">
+                  {item}
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="w-full">
+        <div className="mb-8 flex flex-col items-center text-center">
           <div className="relative mb-6">
             <div className="absolute -inset-4 animate-pulse rounded-full bg-blue-600/20 blur-xl" />
             <div className="relative rounded-[22px] border border-white/10 bg-gradient-to-br from-blue-600 to-indigo-700 p-3.5 shadow-2xl">
@@ -110,21 +155,39 @@ const Login = () => {
           </p>
         </div>
 
-        <div className="relative overflow-hidden rounded-[32px] border border-white/[0.06] bg-[#0f111a] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.5)] md:p-10">
+        <div className="relative overflow-hidden rounded-[28px] border border-white/[0.06] bg-[#0f111a] p-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)] md:p-8">
           <div className="space-y-6">
+            {!socialAuthEnabled && (
+              <div className="flex items-start gap-2 rounded-2xl border border-amber-500/15 bg-amber-500/8 px-4 py-3 text-xs leading-5 text-amber-200">
+                <BadgeInfo size={16} className="mt-0.5 shrink-0" />
+                <span>
+                  Social login is parked until OAuth credentials are configured.
+                  Email login is ready.
+                </span>
+              </div>
+            )}
+
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
-                onClick={() => handleSocialAuth(googleAuthUrl)}
-                className="flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/[0.06]"
+                onClick={() => handleSocialAuth(googleAuthUrl, "Google")}
+                className={`flex min-h-12 items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
+                  socialAuthEnabled
+                    ? "border-white/10 bg-white/[0.03] text-white hover:bg-white/[0.06]"
+                    : "border-white/[0.04] bg-white/[0.015] text-gray-600 hover:text-gray-400"
+                }`}
               >
                 <span className="text-base">G</span>
                 Google
               </button>
               <button
                 type="button"
-                onClick={() => handleSocialAuth(githubAuthUrl)}
-                className="flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/[0.06]"
+                onClick={() => handleSocialAuth(githubAuthUrl, "GitHub")}
+                className={`flex min-h-12 items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
+                  socialAuthEnabled
+                    ? "border-white/10 bg-white/[0.03] text-white hover:bg-white/[0.06]"
+                    : "border-white/[0.04] bg-white/[0.015] text-gray-600 hover:text-gray-400"
+                }`}
               >
                 <span className="text-[11px] font-black uppercase tracking-[0.18em]">
                   GH
@@ -229,6 +292,7 @@ const Login = () => {
         <p className="mt-8 text-center text-[10px] font-bold uppercase tracking-[0.3em] text-gray-700">
           Powered by Synapse Core v1.2
         </p>
+        </section>
       </div>
     </div>
   );
